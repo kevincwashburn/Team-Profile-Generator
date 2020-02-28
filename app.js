@@ -14,31 +14,26 @@ const render = require('./lib/htmlRenderer');
 
 const managerQuestions = [
     {
-        type:"input",
+        type: "input",
         message: "what is your manager's name?",
         name: "name"
     },
     {
-        type:"number",
+        type: "number",
         message: "What is your manager's ID?",
         name: "idNumber"
     },
     {
-        type:"input",
+        type: "input",
         message: "What is your manager's email?",
         name: "contact"
     },
     {
-        type:"number",
+        type: "number",
         message: "What is your manager's office number?",
         name: "officeNumber"
-    },
-    {
-        type: "list",
-        message: "What type of team member would you like to add?",
-        name: "createNewProfile",
-        choices: ["engineer", "intern", "I don't want to add another team member."]
     }
+
 ]
 
 const engineerQuestions = [
@@ -61,12 +56,6 @@ const engineerQuestions = [
         type: "input",
         message: "What is your engineer's GitHub username?",
         name: "githubName"
-    },
-    {
-        type: "list",
-        message: "What type of team member would you like to add?",
-        name: "createNewProfile",
-        choices: ["engineer", "intern", "I don't want to add another team member."]
     }
 ]
 
@@ -90,12 +79,6 @@ const internQuestions = [
         type: "input",
         message: "What is your intern's school?",
         name: "school"
-    },
-    {
-        type: "list",
-        message: "What type of team member would you like to add?",
-        name: "createNewProfile",
-        choices: ["engineer", "intern", "I don't want to add another team member."]
     }
 ]
 
@@ -111,51 +94,59 @@ const internQuestions = [
 // object with the correct structure and methods. This structure will be crucial in order
 // for the provided `render` function to work!```
 
-const runEngineer = () => { inquirer.prompt(engineerQuestions).then(function(answers) {
-    // add engineer answers to engineer class file
-    if(answers.createNewProfile === "engineer") {
-        console.log("engineer selected")
-        runEngineer();
-    } else if(answers.createNewProfile === "intern") {
-        console.log("intern selected")
-        runIntern();
-    } else {
-        // add renderHTML function call here
-    }
-})
+const employeeList = [];
+
+
+const runEngineer = () => {
+    inquirer.prompt(engineerQuestions).then(function (answers) {
+
+        const newEngineer = new Engineer(answers.name, answers.idNumber, answers.contact, answers.githubName);
+        employeeList.push(newEngineer);
+        chooseAction();
+    })
 }
 
-const runIntern = () => { inquirer.prompt(internQuestions).then(function(answers) {
-    // add engineer answers to engineer class file
-    if(answers.createNewProfile === "engineer") {
-        console.log("engineer selected")
-        runEngineer();
-    } else if(answers.createNewProfile === "intern") {
-        console.log("intern selected")
-        runIntern();
-    } else {
-        // add renderHTML function call here
-    }
-})
+const runIntern = () => {
+    inquirer.prompt(internQuestions).then(function (answers) {
+        
+        const newIntern = new Intern(answers.name, answers.idNumber, answers.contact, answers.school);
+        employeeList.push(newIntern);
+        chooseAction();
+    })
 }
 
-const init = () => { inquirer.prompt(managerQuestions).then(function(answers) {
+const init = () => {
+    inquirer.prompt(managerQuestions).then(function (answers) {
+       
+        const newManager = new Manager(answers.name, answers.idNumber, answers.contact, answers.officeNumber);
+        employeeList.push(newManager);
+        chooseAction();
+    })
 
-    // add manager answers to manager class file, push to array ~somehow~
-
-    if(answers.createNewProfile === "engineer") {
-        console.log("engineer selected")
-        runEngineer();
-    } else if(answers.createNewProfile === "intern") {
-        console.log("intern selected")
-        runIntern();
-    } else {
-        // add renderHTML function call here
-    }
-
-})
 }
 
+const chooseAction = () => {
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "What type of team member would you like to add?",
+            name: "action",
+            choices: ["engineer", "intern", "I don't want to add another team member."]
+        }
+    ]).then(function (answers) {
+        if (answers.action === "engineer") {
+            console.log("engineer selected");
+            runEngineer();
+        } else if (answers.action === "intern") {
+            console.log("intern selected");
+            runIntern();
+        } else {
+            // add renderHTML function call here
+            console.log(employeeList);
+            
+        }
+    })
+}
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
