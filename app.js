@@ -141,12 +141,23 @@ const chooseAction = () => {
             console.log("intern selected");
             runIntern();
         } else {
-            // add renderHTML function call here
+            preRender();
             console.log(employeeList);
             
         }
     })
 }
+
+const preRender = () => {
+    
+    
+    if(!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdirSync(OUTPUT_DIR);
+    }
+    
+    fs.writeFileSync(outputPath, render(employeeList))
+
+};
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
 // generate and return a block of HTML including templated divs for each employee!
@@ -159,4 +170,4 @@ const chooseAction = () => {
 // does not. The fs npm package may have methods to check if a directory exists, and they
 // may also have methods to create a directory that doesn't...
 
-init()
+init();
